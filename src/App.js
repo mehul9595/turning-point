@@ -1,15 +1,12 @@
-import React from 'react';
-import Layout from './components/Layout';
-import './antd/const dispatch = useDispatch(function)'
-
+import React from "react";
+import Home from "./components/Home";
 
 const app = () => {
   return (
     <div className="">
-      <h1>Lucky Draw</h1>
-      <Layout></Layout>
+      <Home></Home>
     </div>
   );
 };
 
-export default app
+export default app;
