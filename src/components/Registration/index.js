@@ -1,5 +1,14 @@
 import React from "react";
-import { Card, DatePicker, Form, Input, Select, Divider, Button } from "antd";
+import {
+  Card,
+  DatePicker,
+  Form,
+  Input,
+  Select,
+  Divider,
+  Button,
+  Checkbox,
+} from "antd";
 import "antd/dist/antd.css";
 
 const { Option } = Select;
@@ -15,7 +24,7 @@ const Registration = (props) => {
   );
 
   return (
-    <Card title="Register for Lucky draw!" >
+    <Card title="Register for Lucky draw!" bordered hoverable>
       <Form
         // labelCol={{ span: 18 }}
         // wrapperCol={{ span: 16 }}
@@ -75,11 +84,11 @@ const Registration = (props) => {
             style={{
               display: "inline-block",
               width: "calc(50% - 8px)",
-              margin: "0"
+              margin: "0",
             }}
           >
             <DatePicker
-              style={{width: "100%" }}
+              style={{ width: "100%" }}
               rules={[
                 { required: true, message: "Date of birth is required." },
               ]}
@@ -94,16 +103,47 @@ const Registration = (props) => {
               width: "calc(50% - 8px)",
               margin: "0 8px",
             }}
+            rules={[
+              { type: "number", message: "This is not a valid phone number." },
+              { required: true, message: "Phone number is required." },
+            ]}
           >
             <Input placeholder="Contact number" addonBefore={prefixSelector} />
           </Form.Item>
         </Form.Item>
-        <Form.Item name="email" label="Email">
+        <Form.Item
+          name="email"
+          label="E-mail"
+          rules={[
+            { type: "email", message: "This is not correct email." },
+            { required: true, message: "E-mail is required. " },
+          ]}
+        >
           <Input placeholder="abc@gmail.com" />
         </Form.Item>
         <Divider />
-        <Button type="primary">Submit</Button>
 
+        <Form.Item
+          name="agreement"
+          valuePropName="checked"
+          rules={[
+            {
+              validator: (_, value) =>
+                value
+                  ? Promise.resolve()
+                  : Promise.reject("Should accept agreement"),
+            },
+          ]}
+        >
+          <Checkbox>
+            I have read the <a href="">agreement</a>
+          </Checkbox>
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Form.Item>
       </Form>
     </Card>
   );
