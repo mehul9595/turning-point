@@ -4,7 +4,7 @@ import Registration from "../Registration";
 import "antd/dist/antd.css";
 
 const { Header, Content, Footer } = Layout;
-const contentStyle = { background: "#0092ff", padding: "0 50px" };
+const contentStyle = { background: "#ececec", padding: "20px 50px" };
 
 const Home = (params) => {
   return (
@@ -12,7 +12,7 @@ const Home = (params) => {
       <Row
         type="flex"
         justify="center"
-        style={{ minHeight: "100vh", minWidth: "100vw", padding: "50px 0", backgroundColor:"gray" }}
+        style={{ minHeight: "100vh", minWidth: "100vw", padding: "50px 0", backgroundColor:"#ececec" }}
       >
         <Col>
           {/* <Layout>
