@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, DatePicker, Form, Input, Select } from "antd";
+import { Card, DatePicker, Form, Input, Select, Divider, Button } from "antd";
 import "antd/dist/antd.css";
 
 const { Option } = Select;
@@ -15,10 +15,10 @@ const Registration = (props) => {
   );
 
   return (
-    <Card>
+    <Card title="Register for Lucky draw!" >
       <Form
-        // labelCol={{ span: 8 }}
-        // wrapperCol={{ span: 8 }}
+        // labelCol={{ span: 18 }}
+        // wrapperCol={{ span: 16 }}
         size="large"
         initialValues={{
           prefix: "+852",
@@ -50,7 +50,7 @@ const Registration = (props) => {
           </Form.Item>
         </Form.Item>
 
-        <Form.Item label="Date of Birth" name="dob">
+        <Form.Item>
           {/* <Form.Item
             name="year"
             rules={[{ required: true }]}
@@ -69,13 +69,41 @@ const Registration = (props) => {
           >
             <Input placeholder="Input birth month" />
           </Form.Item> */}
-          <DatePicker
-            rules={[{ required: true, message: "Date of birth is required." }]}
-          />
+          <Form.Item
+            label="Date of Birth"
+            name="dob"
+            style={{
+              display: "inline-block",
+              width: "calc(50% - 8px)",
+              margin: "0"
+            }}
+          >
+            <DatePicker
+              style={{width: "100%" }}
+              rules={[
+                { required: true, message: "Date of birth is required." },
+              ]}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Phone Number"
+            name="phone"
+            style={{
+              display: "inline-block",
+              width: "calc(50% - 8px)",
+              margin: "0 8px",
+            }}
+          >
+            <Input placeholder="Contact number" addonBefore={prefixSelector} />
+          </Form.Item>
         </Form.Item>
-        <Form.Item label="Phone Number" name="phoneNumber">
-          <Input placeholder="Contact number" addonBefore={prefixSelector} />
+        <Form.Item name="email" label="Email">
+          <Input placeholder="abc@gmail.com" />
         </Form.Item>
+        <Divider />
+        <Button type="primary">Submit</Button>
+
       </Form>
     </Card>
   );

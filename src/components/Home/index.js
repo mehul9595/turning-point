@@ -12,7 +12,7 @@ const Home = (params) => {
       <Row
         type="flex"
         justify="center"
-        style={{ minHeight: "100vh", width: "100vw", padding: "50px 0", backgroundColor:"gray" }}
+        style={{ minHeight: "100vh", minWidth: "100vw", padding: "50px 0", backgroundColor:"gray" }}
       >
         <Col>
           {/* <Layout>
