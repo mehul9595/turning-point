@@ -1,24 +1,31 @@
 import React from "react";
 import { Layout, Row, Col } from "antd";
-import Entry from "../Registration";
+import Registration from "../Registration";
 import "antd/dist/antd.css";
 
 const { Header, Content, Footer } = Layout;
-const style = { background: "#0092ff", padding: "8px 0" };
+const contentStyle = { background: "#0092ff", padding: "0 50px" };
 
 const Home = (params) => {
   return (
-    <Layout className="centered">
-      <Header></Header>
-      <Content style={{ margin: "0 auto"}}>
-        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-          <Col className="gutter-row" span={6}>
-            <Entry></Entry>
-          </Col>
-        </Row>
-      </Content>
-      <Footer>Copyright 2021</Footer>
-    </Layout>
+    <>
+      <Row
+        type="flex"
+        justify="center"
+        style={{ minHeight: "100vh", width: "100vw", padding: "50px 0", backgroundColor:"gray" }}
+      >
+        <Col>
+          {/* <Layout>
+            <Header color={"white"}>AIA Lucky Draw</Header>
+            <Content style={contentStyle}>
+              
+            </Content>
+            <Footer>Lucky Draw - Copyright 2021</Footer>
+          </Layout> */}
+          <Registration></Registration>
+        </Col>
+      </Row>
+    </>
   );
 };
 
