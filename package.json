@@ -20,6 +20,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+   "env": {
+      "ci" : ""
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
