@@ -27,7 +27,7 @@ const Registration = (props) => {
   useEffect(() => {
     console.log("use effect : agreementOk value", agreementOk);
     form.setFieldsValue({
-      agreement: true
+      agreement: true,
     });
     setChecked(agreementOk);
   }, [form, agreementOk]);
@@ -36,7 +36,7 @@ const Registration = (props) => {
     setConfirmLoading(true);
     setAgreementOk(true);
     console.log("agreementOk value", agreementOk);
-    console.log('setting fields value true');
+    console.log("setting fields value true");
 
     setTimeout(() => {
       form.validateFields(["agreement"]);
@@ -44,8 +44,6 @@ const Registration = (props) => {
       setConfirmLoading(false);
     }, 500);
   };
-
-  
 
   const showModal = (params) => {
     setVisible(true);
@@ -55,20 +53,12 @@ const Registration = (props) => {
     form.validateFields(["phone"]);
   };
 
-  const onCheckChange =  (e) => {
+  const onCheckChange = (e) => {
     console.log("agreementOk value", agreementOk);
-    if(agreementOk) {
+    if (agreementOk) {
       setChecked(e.target.checked);
     }
   };
-  const validation = (rule, value, callback) => {
-    if(checked && agreementOk) {
-        return callback();
-    }
-    return callback("Please accept the terms and conditions");
-};
-
-
 
   const onSubmitFinish = async (values) => {
     message.loading("Submitting your registration", 2.5);
@@ -114,7 +104,7 @@ const Registration = (props) => {
       </Select>
     </Form.Item>
   );
-  let i = 0;
+  
   return (
     <Card title="Register for Lucky draw!" bordered hoverable>
       <Form
@@ -218,21 +208,21 @@ const Registration = (props) => {
 
         <Form.Item
           name="agreement"
-          // valuePropName="checked"
           rules={[
             {
               type: "boolean",
               required: true,
-              transform: (value) => (value || undefined),
-              validator: validation
-              // validator: async (_, value, callback) => {
-              //   console.log('calling validations', ++i);
-              //   if (value && agreementOk) {
-              //     return Promise.resolve();
-              //   } else {
-              //     return Promise.reject("Read the agreement and confirm ok.");
-              //   }
-              // },
+              transform: (value) => value || undefined,
+              validator: async (_, value) => {
+                
+                if (value && agreementOk) {
+                  return Promise.resolve();
+                } else {
+                  return Promise.reject(
+                    "Please open and accept the terms and conditions"
+                  );
+                }
+              },
             },
           ]}
         >
