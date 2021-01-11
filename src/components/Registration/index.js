@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 import {
@@ -11,7 +11,7 @@ import {
   Button,
   Checkbox,
   Modal,
-  message
+  message,
 } from "antd";
 import "antd/dist/antd.css";
 
@@ -19,19 +19,33 @@ const { Option } = Select;
 
 const Registration = (props) => {
   const [form] = Form.useForm();
+  const [checked, setChecked] = useState(false);
   const [agreementOk, setAgreementOk] = useState(false);
   const [visible, setVisible] = React.useState(false);
   const [confirmLoading, setConfirmLoading] = React.useState(false);
 
+  useEffect(() => {
+    console.log("use effect : agreementOk value", agreementOk);
+    form.setFieldsValue({
+      agreement: true
+    });
+    setChecked(agreementOk);
+  }, [form, agreementOk]);
+
   const handleOk = (params) => {
-    setAgreementOk(true);
     setConfirmLoading(true);
+    setAgreementOk(true);
+    console.log("agreementOk value", agreementOk);
+    console.log('setting fields value true');
+
     setTimeout(() => {
       form.validateFields(["agreement"]);
       setVisible(false);
       setConfirmLoading(false);
     }, 500);
   };
+
+  
 
   const showModal = (params) => {
     setVisible(true);
@@ -41,31 +55,50 @@ const Registration = (props) => {
     form.validateFields(["phone"]);
   };
 
+  const onCheckChange =  (e) => {
+    console.log("agreementOk value", agreementOk);
+    if(agreementOk) {
+      setChecked(e.target.checked);
+    }
+  };
+  const validation = (rule, value, callback) => {
+    if(checked && agreementOk) {
+        return callback();
+    }
+    return callback("Please accept the terms and conditions");
+};
+
+
+
   const onSubmitFinish = async (values) => {
-    message.loading('Submitting your registration', 2.5);
-    
+    message.loading("Submitting your registration", 2.5);
+    console.log("agreementOk", agreementOk);
     const { firstName, lastName, email, phone } = values;
-    
+
     await axios
       .post("https://registrationfuncapi.azurewebsites.net/api/registration", {
         firstName: firstName,
         lastName: lastName,
         email: email,
-        phone: phone
+        phone: phone,
       })
       .then(
-        (response) => {          
+        (response) => {
           console.log(response);
-          message.success('Your entry is submitted. Please wait for the results.', 5);
+          message.success(
+            "Your entry is submitted. Please wait for the results.",
+            5
+          );
         },
         (err) => {
           console.log(err);
-          message.error('Server is busy right now, please try again later.',5);
+          message.error("Server is busy right now, please try again later.", 5);
         }
       )
-      .then(() =>{
+      .then(() => {
         form.resetFields();
-        console.log('called at the end!');
+        setAgreementOk(false);
+        console.log("called at the end!");
       });
   };
 
@@ -81,7 +114,7 @@ const Registration = (props) => {
       </Select>
     </Form.Item>
   );
-
+  let i = 0;
   return (
     <Card title="Register for Lucky draw!" bordered hoverable>
       <Form
@@ -91,11 +124,11 @@ const Registration = (props) => {
         form={form}
         initialValues={{
           prefix: "+852",
+          agreement: false,
         }}
         layout="vertical"
         onFinish={onSubmitFinish}
         onFinishFailed={onSubmitFailed}
-
       >
         <Form.Item label="Name">
           <Form.Item
@@ -185,17 +218,25 @@ const Registration = (props) => {
 
         <Form.Item
           name="agreement"
-          valuePropName="checked"
+          // valuePropName="checked"
           rules={[
             {
-              validator: (_, value) =>
-                value && agreementOk
-                  ? Promise.resolve()
-                  : Promise.reject("Read the agreement and confirm ok."),
+              type: "boolean",
+              required: true,
+              transform: (value) => (value || undefined),
+              validator: validation
+              // validator: async (_, value, callback) => {
+              //   console.log('calling validations', ++i);
+              //   if (value && agreementOk) {
+              //     return Promise.resolve();
+              //   } else {
+              //     return Promise.reject("Read the agreement and confirm ok.");
+              //   }
+              // },
             },
           ]}
         >
-          <Checkbox defaultChecked={false}>
+          <Checkbox checked={checked} onChange={onCheckChange}>
             I have read the
             <Button type="link" onClick={showModal} style={{ padding: "0" }}>
               Terms & Conditions.
