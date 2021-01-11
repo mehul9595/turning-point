@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
+
 import {
   Card,
   DatePicker,
@@ -8,15 +10,72 @@ import {
   Divider,
   Button,
   Checkbox,
+  Modal,
+  message
 } from "antd";
 import "antd/dist/antd.css";
 
 const { Option } = Select;
 
 const Registration = (props) => {
+  const [form] = Form.useForm();
+  const [agreementOk, setAgreementOk] = useState(false);
+  const [visible, setVisible] = React.useState(false);
+  const [confirmLoading, setConfirmLoading] = React.useState(false);
+
+  const handleOk = (params) => {
+    setAgreementOk(true);
+    setConfirmLoading(true);
+    setTimeout(() => {
+      form.validateFields(["agreement"]);
+      setVisible(false);
+      setConfirmLoading(false);
+    }, 500);
+  };
+
+  const showModal = (params) => {
+    setVisible(true);
+  };
+
+  const onPrefixChange = () => {
+    form.validateFields(["phone"]);
+  };
+
+  const onSubmitFinish = async (values) => {
+    message.loading('Submitting your registration', 2.5);
+    
+    const { firstName, lastName, email, phone } = values;
+    
+    await axios
+      .post("https://registrationfuncapi.azurewebsites.net/api/registration", {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: phone
+      })
+      .then(
+        (response) => {          
+          console.log(response);
+          message.success('Your entry is submitted. Please wait for the results.', 5);
+        },
+        (err) => {
+          console.log(err);
+          message.error('Server is busy right now, please try again later.',5);
+        }
+      )
+      .then(() =>{
+        form.resetFields();
+        console.log('called at the end!');
+      });
+  };
+
+  const onSubmitFailed = (values) => {
+    console.log("Error:", values);
+  };
+
   const prefixSelector = (
     <Form.Item name="prefix" noStyle>
-      <Select>
+      <Select onChange={onPrefixChange}>
         <Option value="+852">+852</Option>
         <Option value="+91">+91</Option>
       </Select>
@@ -29,10 +88,14 @@ const Registration = (props) => {
         // labelCol={{ span: 18 }}
         // wrapperCol={{ span: 16 }}
         size="large"
+        form={form}
         initialValues={{
           prefix: "+852",
         }}
         layout="vertical"
+        onFinish={onSubmitFinish}
+        onFinishFailed={onSubmitFailed}
+
       >
         <Form.Item label="Name">
           <Form.Item
@@ -60,24 +123,6 @@ const Registration = (props) => {
         </Form.Item>
 
         <Form.Item>
-          {/* <Form.Item
-            name="year"
-            rules={[{ required: true }]}
-            style={{ display: "inline-block", width: "calc(50% - 8px)" }}
-          >
-            <Input placeholder="Input birth year" />
-          </Form.Item>
-          <Form.Item
-            name="month"
-            rules={[{ required: true }]}
-            style={{
-              display: "inline-block",
-              width: "calc(50% - 8px)",
-              margin: "0 8px",
-            }}
-          >
-            <Input placeholder="Input birth month" />
-          </Form.Item> */}
           <Form.Item
             label="Date of Birth"
             name="dob"
@@ -104,8 +149,23 @@ const Registration = (props) => {
               margin: "0 8px",
             }}
             rules={[
-              { type: "number", message: "This is not a valid phone number." },
               { required: true, message: "Phone number is required." },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  let code = getFieldValue("prefix");
+                  if (
+                    !value ||
+                    (code === "+852" && value.length === 8) ||
+                    (code === "+91" && value.length === 10)
+                  ) {
+                    return Promise.resolve();
+                  }
+
+                  return Promise.reject(
+                    "Phone number is not valid for the selected country code"
+                  );
+                },
+              }),
             ]}
           >
             <Input placeholder="Contact number" addonBefore={prefixSelector} />
@@ -129,16 +189,42 @@ const Registration = (props) => {
           rules={[
             {
               validator: (_, value) =>
-                value
+                value && agreementOk
                   ? Promise.resolve()
-                  : Promise.reject("Should accept agreement"),
+                  : Promise.reject("Read the agreement and confirm ok."),
             },
           ]}
         >
-          <Checkbox>
-            I have read the <a href="">agreement</a>
+          <Checkbox defaultChecked={false}>
+            I have read the
+            <Button type="link" onClick={showModal} style={{ padding: "0" }}>
+              Terms & Conditions.
+            </Button>
           </Checkbox>
         </Form.Item>
+        <Modal
+          title="Terms and Conditions"
+          visible={visible}
+          onOk={handleOk}
+          confirmLoading={confirmLoading}
+          cancelButtonProps={{ hidden: true }}
+          // onCancel={handleCancel}
+        >
+          <p>
+            <b>AGREEMENT TO TERMS</b> <br /> These Terms and Conditions
+            constitute a legally binding agreement made between you, whether
+            personally or on behalf of an entity (“you”) and [business entity
+            name] (“we,” “us” or “our”), concerning your access to and use of
+            the [website name.com] website as well as any other media form,
+            media channel, mobile website or mobile application related, linked,
+            or otherwise connected thereto (collectively, the “Site”). You agree
+            that by accessing the Site, you have read, understood, and agree to
+            be bound by all of these Terms and Conditions. If you do not agree
+            with all of these Terms and Conditions, then you are expressly
+            prohibited from using the Site and you must discontinue use
+            immediately.
+          </p>
+        </Modal>
         <Form.Item>
           <Button type="primary" htmlType="submit">
             Submit
