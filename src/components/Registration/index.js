@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import ReCaptcha from "react-google-recaptcha";
 import {
   Card,
   DatePicker,
@@ -63,6 +63,7 @@ const Registration = (props) => {
   const onSubmitFinish = async (values) => {
     message.loading("Submitting your registration", 2.5);
     console.log("agreementOk", agreementOk);
+
     const { firstName, lastName, email, phone } = values;
 
     await axios
@@ -104,7 +105,31 @@ const Registration = (props) => {
       </Select>
     </Form.Item>
   );
-  
+
+  const onCaptchaChange = (e) => {
+    console.log("onCaptchaChange:", e);
+    const user_response = e;
+    if (e === null) return;
+
+    axios
+      .post(
+        "https://registrationfuncapi.azurewebsites.net/api/siteverifyfuncapi",
+        {
+          user_response: user_response,
+        }
+      )
+      .then(
+        (response) => {
+          console.log(response);
+          message.success("verified", 5);
+        },
+        (err) => {
+          console.log(err);
+          message.error("Server is busy right now, please try again later.", 5);
+        }
+      );
+  };
+
   return (
     <Card title="Register for Lucky draw!" bordered hoverable>
       <Form
@@ -214,7 +239,6 @@ const Registration = (props) => {
               required: true,
               transform: (value) => value || undefined,
               validator: async (_, value) => {
-                
                 if (value && agreementOk) {
                   return Promise.resolve();
                 } else {
@@ -239,7 +263,6 @@ const Registration = (props) => {
           onOk={handleOk}
           confirmLoading={confirmLoading}
           cancelButtonProps={{ hidden: true }}
-          // onCancel={handleCancel}
         >
           <p>
             <b>AGREEMENT TO TERMS</b> <br /> These Terms and Conditions
@@ -256,6 +279,17 @@ const Registration = (props) => {
             immediately.
           </p>
         </Modal>
+        <Form.Item
+          name="challenge"
+          rules={[
+            { required: true, message: "Please verify the captcha challenge." },
+          ]}
+        >
+          <ReCaptcha
+            sitekey="6LdKEikaAAAAAJhWHGwLNbOROaOsNRww5zwCES_T"
+            onChange={onCaptchaChange}
+          ></ReCaptcha>
+        </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
             Submit
