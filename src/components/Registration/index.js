@@ -61,7 +61,7 @@ const Registration = (props) => {
   };
 
   const onSubmitFinish = async (values) => {
-    message.loading("Submitting your registration", 5);
+    message.loading("Submitting your registration", 3);
     console.log("agreementOk", agreementOk);
 
     const { firstName, lastName, email, phone } = values;
