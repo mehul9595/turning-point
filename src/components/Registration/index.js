@@ -61,7 +61,7 @@ const Registration = (props) => {
   };
 
   const onSubmitFinish = async (values) => {
-    message.loading("Submitting your registration", 2.5);
+    message.loading("Submitting your registration", 5);
     console.log("agreementOk", agreementOk);
 
     const { firstName, lastName, email, phone } = values;
@@ -159,7 +159,7 @@ const Registration = (props) => {
           </Form.Item>
           <Form.Item
             name="lastName"
-            rules={[{ required: true }]}
+            rules={[{ required: true, message: "Last Name is required" }]}
             style={{
               display: "inline-block",
               width: "calc(50% - 8px)",
